@@ -12,7 +12,7 @@ func main() {
 	router.LoadHTMLGlob("view.html")
 
 	router.GET("/", getInfo)
-	router.GET("/get")
+	router.GET("/get", getJSON)
 	router.Run()
 
 }
