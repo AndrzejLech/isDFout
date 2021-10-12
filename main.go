@@ -18,32 +18,19 @@ func main() {
 }
 
 func getInfo(context *gin.Context) {
-	result := ""
-	url := "https://store.steampowered.com/app/975370/Dwarf_Fortress/"
-	c := colly.NewCollector()
-
-	c.OnRequest(func(r *colly.Request) {
-		fmt.Println("Visiting", r.URL)
-	})
-
-	c.OnHTML("div.content", func(div *colly.HTMLElement) {
-		div.ForEach("span", func(index int, element *colly.HTMLElement) {
-			if index == 1 {
-				result = element.Text
-			}
-		})
-	})
-
-	c.Visit(url)
-
-	if result != "time is subjective" {
-		result = "yes"
-	}
+	result := visitDwarfFortress()
 
 	context.HTML(200, "view.html", gin.H{"result": result})
 }
 
 func getJSON(context *gin.Context) {
+
+	result := visitDwarfFortress()
+
+	context.JSON(200, result)
+}
+
+func visitDwarfFortress() string {
 	result := ""
 	url := "https://store.steampowered.com/app/975370/Dwarf_Fortress/"
 	c := colly.NewCollector()
@@ -52,19 +39,11 @@ func getJSON(context *gin.Context) {
 		fmt.Println("Visiting", r.URL)
 	})
 
-	c.OnHTML("div.content", func(div *colly.HTMLElement) {
-		div.ForEach("span", func(index int, element *colly.HTMLElement) {
-			if index == 1 {
-				result = element.Text
-			}
-		})
+	c.OnHTML("div.date", func(div *colly.HTMLElement) {
+		result = div.Text
 	})
 
 	c.Visit(url)
 
-	if result != "time is subjective" {
-		result = "yes"
-	}
-
-	context.JSON(200, result)
+	return result
 }
